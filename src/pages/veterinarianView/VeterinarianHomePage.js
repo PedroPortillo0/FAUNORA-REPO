@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
+import NavbarVeterinarian from '../../components/organisms/NavbarVeterinarian';
 
 const VeterinarianHomePage = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -22,26 +23,25 @@ const VeterinarianHomePage = ({ navigation }) => {
     };
 
     const handleEdit = () => {
-        // Lógica para editar el paciente
         console.log(`Editando paciente: ${selectedPatient.name}`);
-        toggleModal(null); // Cerrar el modal
+        toggleModal(null);
     };
 
     const handleDelete = () => {
-        // Lógica para eliminar el paciente
         console.log(`Eliminando paciente: ${selectedPatient.name}`);
-        toggleModal(null); // Cerrar el modal
+        toggleModal(null);
+    };
+
+    const handlePatientPress = (patient) => {
+        navigation.navigate('VeterinaryPetsHome', { ownerName: patient.name });
     };
 
     return (
         <View style={styles.container}>
-            {/* Imagen en la esquina superior izquierda */}
             <Image 
-                source={require('../../../assets/logo2.png')} // Ruta a tu imagen local
-                style={styles.logo} // Estilo para la imagen
+                source={require('../../../assets/logo2.png')}
+                style={styles.logo}
             />
-
-            {/* Encabezado */}
             <View style={styles.header}>
                 <Text style={styles.welcomeText}>Bienvenido</Text>
                 <TextInput 
@@ -50,46 +50,36 @@ const VeterinarianHomePage = ({ navigation }) => {
                 />
             </View>
 
-            {/* Tabla de pacientes */}
             <View style={styles.table}>
                 <View style={styles.tableHeader}>
                     <Text style={styles.columnHeaderL}>ID</Text>
                     <Text style={styles.columnHeaderR}>Nombre del dueño</Text>
                 </View>
 
-                {/* Lista de pacientes */}
                 <ScrollView contentContainerStyle={styles.listContainer}>
                     {patients.map((patient) => (
-                        <View key={patient.id} style={styles.patientRow}>
+                        <TouchableOpacity 
+                            key={patient.id} 
+                            style={styles.patientRow} 
+                            onPress={() => handlePatientPress(patient)}
+                        >
                             <Text style={styles.patientId}>{patient.id}</Text>
                             <Text style={styles.patientName}>{patient.name}</Text>
                             <TouchableOpacity onPress={() => toggleModal(patient)}>
                                 <Ionicons name="ellipsis-vertical" size={20} color="#A0A0A0" />
                             </TouchableOpacity>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
             </View>
 
-            {/* Botón de Agregar */}
-            <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddPatient')}>
+            <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('VeterinarianAddPerson')}>
                 <Ionicons name="add" size={24} color="white" />
                 <Text style={styles.addButtonText}>Agregar</Text>
             </TouchableOpacity>
 
-            {/* Barra de navegación inferior */}
-            <View style={styles.navbar}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                    <Ionicons name="home" size={24} color="#31B3A9" />
-                    <Text style={styles.navText}>Inicio</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Appointments')}>
-                    <Ionicons name="calendar" size={24} color="#A0A0A0" />
-                    <Text style={styles.navText}>Citas</Text>
-                </TouchableOpacity>
-            </View>
+            <NavbarVeterinarian navigation={navigation} />
 
-            {/* Modal */}
             <Modal isVisible={isModalVisible}>
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>Opciones para {selectedPatient?.name}</Text>
@@ -117,7 +107,7 @@ const styles = StyleSheet.create({
         width: 50, // Ajusta el tamaño según sea necesario
         height: 50,
         position: 'absolute',
-        top: 20, // Espaciado desde la parte superior
+        top: 30, // Espaciado desde la parte superior
         left: 20, // Espaciado desde la izquierda
     },
     header: {
@@ -186,7 +176,7 @@ const styles = StyleSheet.create({
         width: '80%',
     },
     addButton: {
-        backgroundColor: 'rgba(247, 67, 182, 0.47)',
+        backgroundColor: 'rgba(247, 67, 182, 0.37)',
         borderRadius: 10,
         width: 110,
         height: 50,

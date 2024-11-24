@@ -27,7 +27,9 @@ const LoginPage = ({ navigation }) => {
   const handleLogin = async () => {
     await AsyncStorage.setItem('hasLoggedIn', 'true');
     setHasLoggedInBefore(true);
+    navigation.navigate('HomePage'); // Navegar a la página de inicio
   };
+  
 
   const handleBiometricAuth = async () => {
     const hasHardware = await LocalAuthentication.hasHardwareAsync();

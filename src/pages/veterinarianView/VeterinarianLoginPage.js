@@ -19,7 +19,7 @@ const VeterinarianLoginPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Landing')}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
       <View style={styles.containerImgTop}>

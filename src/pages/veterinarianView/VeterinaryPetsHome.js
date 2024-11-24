@@ -1,12 +1,15 @@
-// HomePageMain.js
+// VeterinaryPetsHome.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import Icon from '../../components/atoms/Icon';
 import PetCard from '../../components/molecules/PetCard';
-import Navbar from '../../components/organisms/Navbar';
+import NavbarVeterinarian from '../../components/organisms/NavbarVeterinarian';
+import { useRoute } from '@react-navigation/native';
 
-const HomePageMain = ({ navigation }) => {
+const VeterinaryPetsHome = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
+    const route = useRoute();
+    const { ownerName } = route.params;
 
     const pets = [
         {
@@ -20,15 +23,6 @@ const HomePageMain = ({ navigation }) => {
         },
         {
             id: '2',
-            name: 'Rocky',
-            breed: 'Beagle',
-            weight: 3.0,
-            age: 7,
-            gender: 'male',
-            imageUri: require('../../../assets/Rocky.png'),
-        },
-        {
-            id: '3',
             name: 'Mia',
             breed: 'Siamés',
             weight: 3.0,
@@ -42,7 +36,7 @@ const HomePageMain = ({ navigation }) => {
         <View style={styles.container}>
             <Image source={require('../../../assets/logo2.png')} style={styles.logo} />
             <View style={styles.header}>
-                <Text style={styles.welcomeText}>Bienvenido Alejandro</Text>
+            <Text style={styles.headerText}>Mascotas de {ownerName}</Text>
                 <View style={styles.searchContainer}>
                     <Icon name="search" size={20} color="#A0A0A0" style={styles.searchIcon} />
                     <TextInput
@@ -82,17 +76,12 @@ const HomePageMain = ({ navigation }) => {
                         age={pet.age}
                         gender={pet.gender}
                         imageUri={pet.imageUri}
-                        targetScreen="PetDetails"
+                        targetScreen="VeterinarianPetDetails"
                     />
                 ))}
             </ScrollView>
 
-
-            <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('PetForm')}>
-                <Icon name="add" size={24} color="white" />
-                <Text style={styles.addButtonText}>Agregar</Text>
-            </TouchableOpacity>
-            <Navbar navigation={navigation} />
+            <NavbarVeterinarian navigation={navigation} />
         </View>
     );
 };
@@ -113,12 +102,12 @@ const styles = StyleSheet.create({
         paddingTop: 80,
         paddingHorizontal: 20,
     },
-    welcomeText: {
+    headerText: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#00B4A7',
-        marginBottom: 20,
-        alignSelf: 'flex-end',
+        marginBottom: 30,
+        textAlign: 'right',
     },
     searchContainer: {
         flexDirection: 'row',
@@ -172,4 +161,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomePageMain;
+export default VeterinaryPetsHome;

@@ -9,7 +9,15 @@ import VeterinarianRegisterPage from './src/pages/veterinarianView/VeterinarianR
 import RecoverPasswordPage from './src/pages/RecoverPasswordPage';
 import ChangePasswordPage from './src/pages/ChangePasswordPage';
 import VeterinarianHomePage from './src/pages/veterinarianView/VeterinarianHomePage';
+import VeterinaryPetsHome from './src/pages/veterinarianView/VeterinaryPetsHome';
+import VeterinarianPetDetails from './src/pages/veterinarianView/VeterinarianPetDetails';
+import VeterinarianAddPerson from './src/pages/veterinarianView/VeterinarianAddPerson';
+import VeterinarianDatePage from './src/pages/veterinarianView/VeterinarianDatePage';
 import HomePage from './src/pages/userView/HomePage';
+import PetDetails from './src/pages/userView/PetDetails';
+import UserProfile from './src/pages/userView/ProfilePage';
+import MyCalendarScreen from './src/pages/userView/DatesPage';
+import PetForm from './src/pages/userView/AddPetPage';
 
 const Stack = createStackNavigator();
 
@@ -58,8 +66,48 @@ export default function App() {
           options={{ headerShown: false }} 
         />
         <Stack.Screen 
+          name="VeterinaryPetsHome" 
+          component={VeterinaryPetsHome} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="VeterinarianPetDetails" 
+          component={VeterinarianPetDetails} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="VeterinarianAddPerson" 
+          component={VeterinarianAddPerson} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="VeterinarianDatePage" 
+          component={VeterinarianDatePage} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
           name="HomePage" 
           component={HomePage} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="PetDetails" 
+          component={PetDetails} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="UserProfile" 
+          component={UserProfile} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="MyCalendarScreen" 
+          component={MyCalendarScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="PetForm" 
+          component={PetForm} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

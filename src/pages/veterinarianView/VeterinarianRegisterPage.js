@@ -182,6 +182,9 @@ const RegisterPage = ({ navigation }) => {
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
           <Text style={styles.loginButtonText}>Registrar</Text>
         </TouchableOpacity>
+        <Text style={styles.linkText}>
+          ¿Eres dueño de alguna mascota? <Text style={styles.link} onPress={() => navigation.navigate('Register')}>Registrate aquí</Text>
+        </Text>
       </ScrollView>
 
       {mapVisible && (
@@ -198,6 +201,7 @@ const RegisterPage = ({ navigation }) => {
           {latitude && longitude && <Marker coordinate={{ latitude, longitude }} />}
         </MapView>
       )}
+      
     </View>
   );
 };
