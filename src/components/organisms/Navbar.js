@@ -34,7 +34,9 @@ const Navbar = ({ navigation }) => {
         } else if (option === 'Perfil') {
             navigation.navigate('UserProfile'); // Redirige a la pantalla de UserProfile
         } else if (option === 'Citas') {
-            navigation.navigate('MyCalendarScreen'); // Redirige a la pantalla de UserProfile
+            navigation.navigate('MyCalendarScreen'); // Redirige a la pantalla de MyCalendarScreen
+        } else if (option === 'Reporte') {
+            navigation.navigate('ReportPage'); // Redirige a la pantalla de ReportPage
         } else {
             navigation.navigate(option);
         }
@@ -44,7 +46,6 @@ const Navbar = ({ navigation }) => {
         <View style={styles.navbar}>
             {[
                 { iconName: 'stats-chart', label: 'Reporte' },
-                { iconName: 'star', label: 'Reseñas' },
                 { iconName: 'home', label: 'Inicio' },
                 { iconName: 'person', label: 'Perfil' },
                 { iconName: 'calendar', label: 'Citas' },

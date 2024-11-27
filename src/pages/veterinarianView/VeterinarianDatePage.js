@@ -71,10 +71,10 @@ const VeterinarianDatePage = ({ navigation }) => {
         )}
       </ScrollView>
 
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('VeterinarianAddPerson')}>
-                <Ionicons name="add" size={24} color="white" />
-                <Text style={styles.addButtonText}>Agendar cita</Text>
-            </TouchableOpacity>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('VeterinarianAddDate')}>
+        <Ionicons name="add" size={24} color="white" />
+        <Text style={styles.addButtonText}>Agendar cita</Text>
+      </TouchableOpacity>
       <NavbarVeterinarian navigation={navigation} />
     </View>
   );

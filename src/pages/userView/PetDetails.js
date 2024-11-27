@@ -81,14 +81,6 @@ const PetDetails = ({ route, navigation }) => {
                                     <Text style={styles.vetInfo}>Calle 123, Ciudad, País</Text>
                                 </View>
                             </View>
-
-                            {/* Columna Derecha: Foto */}
-                            <View style={styles.vetPhotoColumn}>
-                                <Image
-                                    source={require('../../../assets/vetImg.png')} // Ruta de tu imagen
-                                    style={styles.vetImage}
-                                />
-                            </View>
                         </View>
                     </View>
 
@@ -152,13 +144,13 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         paddingLeft: 30,
-        paddingTop: 80,
+        paddingTop: 70,
         alignItems: 'flex-start',
     },
     waveContainer: {
         width: '100%',
         transform: [{ rotate: '180deg' }],
-        marginTop: -10,
+        marginTop: -1,
     },
     image: {
         zIndex: 2,
@@ -180,7 +172,7 @@ const styles = StyleSheet.create({
     cardGruop: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '80%',
+        width: '90%',
     },
     card: {
         marginTop: 30,
@@ -201,7 +193,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
     vetDetails: {
-    width: '90%',
+    width: '85%',
     },
     vetColumns: {
         flexDirection: 'row',

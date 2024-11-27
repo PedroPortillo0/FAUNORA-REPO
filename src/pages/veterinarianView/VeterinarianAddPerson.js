@@ -87,7 +87,7 @@ const VeterinarianAddPerson = ({ navigation }) => {
       {/* Identificador del dueño */}
       <View style={styles.inputContainer}>
         <MaterialCommunityIcons
-          name="id-card"
+          name="card-account-details"
           size={20}
           color="#0078FF"
           style={styles.icon}

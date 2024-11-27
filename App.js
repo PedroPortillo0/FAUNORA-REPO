@@ -2,8 +2,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingPage from './src/pages/userView/LandingPage';
-import LoginPage from './src/pages/userView/LoginPage'; 
-import RegisterPage from './src/pages/userView/RegisterPage';
 import VeterinarianLoginPage from './src/pages/veterinarianView/VeterinarianLoginPage';
 import VeterinarianRegisterPage from './src/pages/veterinarianView/VeterinarianRegisterPage';
 import RecoverPasswordPage from './src/pages/RecoverPasswordPage';
@@ -13,11 +11,16 @@ import VeterinaryPetsHome from './src/pages/veterinarianView/VeterinaryPetsHome'
 import VeterinarianPetDetails from './src/pages/veterinarianView/VeterinarianPetDetails';
 import VeterinarianAddPerson from './src/pages/veterinarianView/VeterinarianAddPerson';
 import VeterinarianDatePage from './src/pages/veterinarianView/VeterinarianDatePage';
+import VeterinarianAddDate from './src/pages/veterinarianView/VeterinarianAddDate';
 import HomePage from './src/pages/userView/HomePage';
+import LoginPage from './src/pages/userView/LoginPage'; 
+import RegisterPage from './src/pages/userView/RegisterPage';
 import PetDetails from './src/pages/userView/PetDetails';
 import UserProfile from './src/pages/userView/ProfilePage';
 import MyCalendarScreen from './src/pages/userView/DatesPage';
 import PetForm from './src/pages/userView/AddPetPage';
+import ReportPage from './src/pages/userView/ReportPage';
+import ContactPage from './src/pages/userView/ContactPage';
 
 const Stack = createStackNavigator();
 
@@ -86,6 +89,11 @@ export default function App() {
           options={{ headerShown: false }} 
         />
         <Stack.Screen 
+          name="VeterinarianAddDate" 
+          component={VeterinarianAddDate} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
           name="HomePage" 
           component={HomePage} 
           options={{ headerShown: false }} 
@@ -108,6 +116,16 @@ export default function App() {
         <Stack.Screen 
           name="PetForm" 
           component={PetForm} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="ReportPage" 
+          component={ReportPage} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="ContactPage" 
+          component={ContactPage} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

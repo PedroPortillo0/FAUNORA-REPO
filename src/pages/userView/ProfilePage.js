@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; // Importa useState
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome } from 'react-native-vector-icons';
 import WaveSvg from '../../../assets/WaveSvg'; // Importa el componente SVG
 import Navbar from '../../components/organisms/Navbar'; // Importa el componente Navbar
@@ -11,64 +11,65 @@ const UserProfile = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Fondo con cuadro de color */}
-            <View style={styles.headerBackground}></View>
-            
-            {/* Onda */}
-            <View style={styles.waveContainer}>
-                <WaveSvg color="#E0F7FA" />
-            </View>
-
-            {/* Imagen de usuario */}
-            <Image
-                source={{ uri: 'https://i.imgur.com/4YB4hW3.png' }} // Sustituye con tu imagen
-                style={styles.profileImage}
-            />
-
-            {/* Información del usuario */}
-            <View style={styles.infoContainer}>
-                <View style={styles.userNameContainer}>
-                    <Text style={styles.userName}>Juan Pérez Cruz</Text>
-                    {/* Mostrar la corona solo si isPremium es true */}
-                    {isPremium && 
-                        <MaterialCommunityIcons 
-                            name="crown" 
-                            size={16} 
-                            color="#FFC107" 
-                            style={styles.crownIcon} // Añadir estilo para separar la corona
-                        />
-                    }
-                </View>
-                <Text style={styles.subtitle}>Actualmente cuenta con 2 mascotas</Text>
-                <Text style={styles.userId}>Identificador: 127520763</Text>
-
-                {/* Información de contacto */}
-                <View style={styles.contactContainer}>
-                    <View style={styles.contactItem}>
-                        <View style={styles.iconCircle}>
-                            <FontAwesome name="phone" size={24} color="#31B3A9" />
-                        </View>
-                        <Text style={styles.contactText}>961 456 7890</Text>
-                    </View>
-                    <View style={styles.contactItem}>
-                        <View style={styles.iconCircle}>
-                            <FontAwesome name="envelope" size={24} color="#DC4638" />
-                        </View>
-                        <Text style={styles.contactText}>JuanPc@gmail.com</Text>
-                    </View>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                {/* Fondo con cuadro de color */}
+                <View style={styles.headerBackground}></View>
+                
+                {/* Onda */}
+                <View style={styles.waveContainer}>
+                    <WaveSvg color="#E0F7FA" />
                 </View>
 
-            </View>
+                {/* Imagen de usuario */}
+                <Image
+                    source={{ uri: 'https://i.imgur.com/4YB4hW3.png' }} // Sustituye con tu imagen
+                    style={styles.profileImage}
+                />
 
-            {/* Contenedor para los botones, alineados hacia abajo */}
-            <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.premiumButton}>
-                    <Text style={styles.premiumText}>Volverse premium</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.logoutButton}>
-                    <Text style={styles.logoutText}>Cerrar sesión</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Información del usuario */}
+                <View style={styles.infoContainer}>
+                    <View style={styles.userNameContainer}>
+                        <Text style={styles.userName}>Juan Pérez Cruz</Text>
+                        {/* Mostrar la corona solo si isPremium es true */}
+                        {isPremium && 
+                            <MaterialCommunityIcons 
+                                name="crown" 
+                                size={16} 
+                                color="#FFC107" 
+                                style={styles.crownIcon} // Añadir estilo para separar la corona
+                            />
+                        }
+                    </View>
+                    <Text style={styles.subtitle}>Actualmente cuenta con 2 mascotas</Text>
+                    <Text style={styles.userId}>Identificador: 127520763</Text>
+
+                    {/* Información de contacto */}
+                    <View style={styles.contactContainer}>
+                        <View style={styles.contactItem}>
+                            <View style={styles.iconCircle}>
+                                <FontAwesome name="phone" size={24} color="#31B3A9" />
+                            </View>
+                            <Text style={styles.contactText}>961 456 7890</Text>
+                        </View>
+                        <View style={styles.contactItem}>
+                            <View style={styles.iconCircle}>
+                                <FontAwesome name="envelope" size={24} color="#DC4638" />
+                            </View>
+                            <Text style={styles.contactText}>JuanPc@gmail.com</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Contenedor para los botones, alineados hacia abajo */}
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={styles.premiumButton}>
+                        <Text style={styles.premiumText}>Volverse premium</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.logoutButton}>
+                        <Text style={styles.logoutText}>Cerrar sesión</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
 
             {/* Navbar */}
             <Navbar navigation={navigation} />
@@ -80,7 +81,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        width: '100%',
+    },
+    scrollContainer: {
+        flexGrow: 1,
         alignItems: 'center',
+        width: '100%',
+        paddingBottom: 100, // Espacio adicional para el contenido
     },
     headerBackground: {
         width: '100%',
@@ -108,7 +115,6 @@ const styles = StyleSheet.create({
         width: '90%',
         alignItems: 'flex-start', // Alinea el texto a la izquierda
         marginTop: 70,
-        flex: 1, // Esto hace que el contenedor ocupe el espacio restante
     },
     userNameContainer: {
         flexDirection: 'row', // Asegura que el texto y la corona estén en fila

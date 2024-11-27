@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ImageAtom from '../../components/atoms/ImageAtom';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -29,7 +29,6 @@ const LoginPage = ({ navigation }) => {
     setHasLoggedInBefore(true);
     navigation.navigate('HomePage'); // Navegar a la página de inicio
   };
-  
 
   const handleBiometricAuth = async () => {
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
@@ -57,69 +56,71 @@ const LoginPage = ({ navigation }) => {
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* Imagen Superior */}
-      <View style={styles.containerImgTop}>
-        <ImageAtom 
-          source={require('../../../assets/logo1.png')} 
-        />
-      </View>
-
-      {/* Contenido del Login */}
-      <View style={styles.loginContainer}>
-        <Text style={styles.title}>Iniciar sesión como dueño</Text>
-        <Text style={styles.subtitle}>Administra el cuidado de tus animales de forma sencilla.</Text>
-
-        {/* Campo de Correo Electrónico */}
-        <View style={[styles.inputContainer, emailFocused && styles.inputContainerFocused]}>
-          <Ionicons name="mail-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Correo electrónico" 
-            style={styles.input} 
-            keyboardType="email-address"
-            onFocus={() => setEmailFocused(true)}
-            onBlur={() => setEmailFocused(false)}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Imagen Superior */}
+        <View style={styles.containerImgTop}>
+          <ImageAtom 
+            source={require('../../../assets/logo1.png')} 
           />
         </View>
 
-        {/* Campo de Contraseña */}
-        <View style={[styles.inputContainer, passwordFocused && styles.inputContainerFocused]}>
-          <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Contraseña" 
-            style={styles.input} 
-            secureTextEntry={!isPasswordVisible}
-            onChangeText={setPassword}
-            value={password}
-            onFocus={() => setPasswordFocused(true)}
-            onBlur={() => setPasswordFocused(false)}
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Ionicons 
-              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
-              size={20} 
-              color="#A0A0A0" 
+        {/* Contenido del Login */}
+        <View style={styles.loginContainer}>
+          <Text style={styles.title}>Iniciar sesión como dueño</Text>
+          <Text style={styles.subtitle}>Administra el cuidado de tus animales de forma sencilla.</Text>
+
+          {/* Campo de Correo Electrónico */}
+          <View style={[styles.inputContainer, emailFocused && styles.inputContainerFocused]}>
+            <Ionicons name="mail-outline" size={20} color="#A0A0A0" />
+            <TextInput 
+              placeholder="Correo electrónico" 
+              style={styles.input} 
+              keyboardType="email-address"
+              onFocus={() => setEmailFocused(true)}
+              onBlur={() => setEmailFocused(false)}
             />
+          </View>
+
+          {/* Campo de Contraseña */}
+          <View style={[styles.inputContainer, passwordFocused && styles.inputContainerFocused]}>
+            <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
+            <TextInput 
+              placeholder="Contraseña" 
+              style={styles.input} 
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={setPassword}
+              value={password}
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
+            />
+            <TouchableOpacity onPress={togglePasswordVisibility}>
+              <Ionicons 
+                name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+                size={20} 
+                color="#A0A0A0" 
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Iniciar sesión</Text>
           </TouchableOpacity>
+
+          {hasLoggedInBefore && (
+            <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricAuth}>
+              <Ionicons name="finger-print-outline" size={24} color="#00B4A7" />
+              <Text style={styles.biometricButtonText}>Iniciar sesión con huella dactilar</Text>
+            </TouchableOpacity>
+          )}
+
+          <Text style={styles.linkText}>
+            ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianLogin')}>Inicia sesión aquí</Text>
+          </Text>
+          <Text style={styles.linkText}>
+            Recupera su contraseña <Text style={styles.link} onPress={() => navigation.navigate('RecoverPassword')}>aquí</Text>
+          </Text>
         </View>
-
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
-
-        {hasLoggedInBefore && (
-          <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricAuth}>
-            <Ionicons name="finger-print-outline" size={24} color="#00B4A7" />
-            <Text style={styles.biometricButtonText}>Iniciar sesión con huella dactilar</Text>
-          </TouchableOpacity>
-        )}
-
-        <Text style={styles.linkText}>
-          ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianLogin')}>Inicia sesión aquí</Text>
-        </Text>
-        <Text style={styles.linkText}>
-          Recupera su contraseña <Text style={styles.link} onPress={() => navigation.navigate('RecoverPassword')}>aquí</Text>
-        </Text>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -135,6 +136,11 @@ const styles = StyleSheet.create({
     left: 20,
     zIndex: 1,
   },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   containerImgTop: {
     width: '100%',
     height: '30%',
@@ -147,6 +153,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
     padding: 40,
     alignItems: 'center',
+    width: '100%',
   },
   title: {
     fontSize: 40,

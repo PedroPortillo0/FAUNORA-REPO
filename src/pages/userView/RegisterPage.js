@@ -1,30 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
 import ImageAtom from '../../components/atoms/ImageAtom';
 
 const RegisterPage = ({ navigation }) => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
-  const [usernameFocused, setUsernameFocused] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [focusedField, setFocusedField] = useState(null);
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
-  };
-
-  const handleRegister = () => {
-    if (!email || !username || !password || !confirmPassword) {
+  const handleRegister = async () => {
+    if (!firstName || !lastName || !email || !phoneNumber) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
@@ -35,22 +23,55 @@ const RegisterPage = ({ navigation }) => {
       return;
     }
 
-    if (username.length < 3) {
-      Alert.alert("Error", "El nombre de usuario debe tener al menos 3 caracteres.");
+    if (phoneNumber.length < 10) {
+      Alert.alert("Error", "El número telefónico debe tener al menos 10 dígitos.");
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres.");
-      return;
-    }
+    // Preparar datos para la solicitud
+    const requestData = {
+      firstName,
+      lastName,
+      email,
+      phone: phoneNumber,
+    };
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
-      return;
-    }
+    try {
+      const response = await fetch(
+        "https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/contacts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
 
-    Alert.alert("Éxito", "Te has registrado correctamente.");
+      if (response.ok) {
+        const responseData = await response.json();
+        Alert.alert("Éxito", "Registro completado correctamente.");
+        console.log("Respuesta del servidor:", responseData);
+
+        // Guardar el correo electrónico en AsyncStorage después de la respuesta exitosa
+        try {
+          await AsyncStorage.setItem('userEmail', email); // Guardamos el correo en el almacenamiento local
+          console.log("Correo electrónico guardado en AsyncStorage: ", email); // Muestra el correo guardado
+        } catch (error) {
+          console.error("Error al guardar el correo en AsyncStorage:", error);
+        }
+
+        // Navegar a otra pantalla si es necesario
+        navigation.navigate("ContactPage"); // Cambia 'Home' según sea necesario
+      } else {  
+        const errorData = await response.json();
+        Alert.alert("Error", errorData.message || "Ocurrió un error durante el registro.");
+        console.error("Error en el servidor:", errorData);
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo conectar con el servidor. Inténtalo más tarde.");
+      console.error("Error de red:", error);
+    }
   };
 
   return (
@@ -67,69 +88,58 @@ const RegisterPage = ({ navigation }) => {
         <Text style={styles.title}>Regístrate como dueño</Text>
         <Text style={styles.subtitle}>Empieza a gestionar el cuidado de tus animales de manera eficiente.</Text>
 
-        <View style={[styles.inputContainer, emailFocused && styles.inputContainerFocused]}>
+        {/* Campo de Nombre */}
+        <View style={[styles.inputContainer, focusedField === 'firstName' && styles.inputContainerFocused]}>
+          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
+          <TextInput 
+            placeholder="Nombre" 
+            style={styles.input} 
+            onChangeText={setFirstName}
+            value={firstName}
+            onFocus={() => setFocusedField('firstName')}
+            onBlur={() => setFocusedField(null)}
+          />
+        </View>
+
+        {/* Campo de Apellido */}
+        <View style={[styles.inputContainer, focusedField === 'lastName' && styles.inputContainerFocused]}>
+          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
+          <TextInput 
+            placeholder="Apellido" 
+            style={styles.input} 
+            onChangeText={setLastName}
+            value={lastName}
+            onFocus={() => setFocusedField('lastName')}
+            onBlur={() => setFocusedField(null)}
+          />
+        </View>
+
+        {/* Campo de Correo Electrónico */}
+        <View style={[styles.inputContainer, focusedField === 'email' && styles.inputContainerFocused]}>
           <Ionicons name="mail-outline" size={20} color="#A0A0A0" />
           <TextInput 
             placeholder="Correo electrónico" 
             style={styles.input} 
             keyboardType="email-address"
-            onFocus={() => setEmailFocused(true)}
-            onBlur={() => setEmailFocused(false)}
             onChangeText={setEmail}
             value={email}
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField(null)}
           />
         </View>
 
-        <View style={[styles.inputContainer, usernameFocused && styles.inputContainerFocused]}>
-          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
+        {/* Campo de Número Telefónico */}
+        <View style={[styles.inputContainer, focusedField === 'phoneNumber' && styles.inputContainerFocused]}>
+          <Ionicons name="call-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Nombre de usuario" 
+            placeholder="Número telefónico" 
             style={styles.input} 
-            onChangeText={setUsername}
-            value={username}
-            onFocus={() => setUsernameFocused(true)}
-            onBlur={() => setUsernameFocused(false)}
+            keyboardType="phone-pad"
+            onChangeText={setPhoneNumber}
+            value={phoneNumber}
+            onFocus={() => setFocusedField('phoneNumber')}
+            onBlur={() => setFocusedField(null)}
           />
-        </View>
-
-        <View style={[styles.inputContainer, passwordFocused && styles.inputContainerFocused]}>
-          <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Contraseña" 
-            style={styles.input} 
-            secureTextEntry={!isPasswordVisible}
-            onChangeText={setPassword}
-            value={password}
-            onFocus={() => setPasswordFocused(true)}
-            onBlur={() => setPasswordFocused(false)}
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Ionicons 
-              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
-              size={20} 
-              color="#A0A0A0" 
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={[styles.inputContainer, confirmPasswordFocused && styles.inputContainerFocused]}>
-          <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Confirmar contraseña" 
-            style={styles.input} 
-            secureTextEntry={!isConfirmPasswordVisible}
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-            onFocus={() => setConfirmPasswordFocused(true)}
-            onBlur={() => setConfirmPasswordFocused(false)}
-          />
-          <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
-            <Ionicons 
-              name={isConfirmPasswordVisible ? "eye-off-outline" : "eye-outline"} 
-              size={20} 
-              color="#A0A0A0" 
-            />
-          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
@@ -137,7 +147,7 @@ const RegisterPage = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={styles.linkText}>
-          ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianRegister')}>Registrate aquí</Text>
+          ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianRegisterPage')}>Registrate aquí</Text>
         </Text>
       </ScrollView>
     </View>

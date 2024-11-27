@@ -1,4 +1,3 @@
-// HomePageMain.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import Icon from '../../components/atoms/Icon';
@@ -33,60 +32,61 @@ const HomePageMain = ({ navigation }) => {
             breed: 'Siamés',
             weight: 3.0,
             age: 7,
-            gender: 'famale',
+            gender: 'female',
             imageUri: require('../../../assets/Mia.png'),
         },
     ];
 
     return (
         <View style={styles.container}>
-            <Image source={require('../../../assets/logo2.png')} style={styles.logo} />
-            <View style={styles.header}>
-                <Text style={styles.welcomeText}>Bienvenido Alejandro</Text>
-                <View style={styles.searchContainer}>
-                    <Icon name="search" size={20} color="#A0A0A0" style={styles.searchIcon} />
-                    <TextInput
-                        style={styles.searchBar}
-                        placeholder="Busca el nombre de tu mascota"
-                        placeholderTextColor="#A0A0A0"
-                    />
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Image source={require('../../../assets/logo2.png')} style={styles.logo} />
+                <View style={styles.header}>
+                    <Text style={styles.welcomeText}>Bienvenido Alejandro</Text>
+                    <View style={styles.searchContainer}>
+                        <Icon name="search" size={20} color="#A0A0A0" style={styles.searchIcon} />
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder="Busca el nombre de tu mascota"
+                            placeholderTextColor="#A0A0A0"
+                        />
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.menuContainer}>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Text style={styles.menuText}>Perros</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Text style={styles.menuText}>Gatos</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Text style={styles.menuText}>Pajaros</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Text style={styles.menuText}>Peces</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Text style={styles.menuText}>Hámsters</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.menuContainer}>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuText}>Perros</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuText}>Gatos</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuText}>Pajaros</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuText}>Peces</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuText}>Hámsters</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-            </View>
 
-            <ScrollView contentContainerStyle={styles.petList}>
-                {pets.map((pet) => (
-                    <PetCard
-                        key={pet.id}
-                        navigation={navigation}
-                        id={pet.id}
-                        name={pet.name}
-                        breed={pet.breed}
-                        weight={pet.weight}
-                        age={pet.age}
-                        gender={pet.gender}
-                        imageUri={pet.imageUri}
-                        targetScreen="PetDetails"
-                    />
-                ))}
+                <View style={styles.petList}>
+                    {pets.map((pet) => (
+                        <PetCard
+                            key={pet.id}
+                            navigation={navigation}
+                            id={pet.id}
+                            name={pet.name}
+                            breed={pet.breed}
+                            weight={pet.weight}
+                            age={pet.age}
+                            gender={pet.gender}
+                            imageUri={pet.imageUri}
+                            targetScreen="PetDetails"
+                        />
+                    ))}
+                </View>
             </ScrollView>
-
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('PetForm')}>
                 <Icon name="add" size={24} color="white" />
@@ -101,6 +101,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+    },
+    scrollContainer: {
+        flexGrow: 1,
+        paddingBottom: 100, // Espacio adicional para el botón de agregar
     },
     logo: {
         width: 50,
