@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 
-const RegisterPage = ({ navigation }) => {
+const VeterinarianRegisterPage = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -328,4 +328,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterPage;
+export default VeterinarianRegisterPage;

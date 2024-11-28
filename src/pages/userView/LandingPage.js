@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Modal, Text, TextInput, Pressable } from 'react-native';
 import ButtonAtom from '../../components/atoms/ButtonAtom';
 import ImageAtom from '../../components/atoms/ImageAtom';
-import WrapperText from '../../components/molecules/WrapperText'; 
+import WrapperText from '../../components/molecules/WrapperText';
 import SubtitleAtom from '../../components/atoms/SubtitleAtom';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LandingPage = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [code, setCode] = useState('');
+
 
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -18,16 +20,53 @@ const LandingPage = ({ navigation }) => {
     setCode('');
   };
 
-  const handleSubmitCode = () => {
+  const handleSubmitCode = async () => {
     // Validación simple: verifica si el código tiene 5 dígitos
+          navigation.navigate('Login');
     if (code.length === 5) {
       alert('Código válido. Continuar con el proceso.');
-      handleCloseModal();
-      navigation.navigate('Login');
+      
+      // Obtener el userId de AsyncStorage
+      const ip = await AsyncStorage.getItem('userId');
+  
+      const data = {
+        userId: ip,
+        code: code,
+      };
+  
+      console.log('Datos enviados:', data);
+  
+      try {
+        const response = await fetch('https://3bl9j75s-3002.usw3.devtunnels.ms/api/v1/notifications/token/validate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+  
+        // Verifica si la respuesta fue exitosa
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Resultado:', result);
+  
+          // Redirige al usuario solo si el POST fue exitoso
+          navigation.navigate('Login');
+        } else {
+          // Manejo de errores si el POST falla
+          const errorResponse = await response.json();
+          console.error('Error del servidor:', errorResponse);
+          alert('Hubo un problema al validar el código. Inténtalo de nuevo.');
+        }
+      } catch (error) {
+        console.error('Error al realizar el POST:', error);
+        alert('Ocurrió un error inesperado. Por favor, verifica tu conexión.');
+      }
     } else {
       alert('Por favor, ingrese un código de 5 dígitos.');
     }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -179,7 +218,7 @@ const styles = StyleSheet.create({
   modalCloseButton: {
     width: '100%',
     padding: 10,
-    backgroundColor: '#ccc',
+    backgroundColor: '#DC4638',
     borderRadius: 5,
     alignItems: 'center',
   },

@@ -12,7 +12,13 @@ const RegisterPage = ({ navigation }) => {
   const [focusedField, setFocusedField] = useState(null);
 
   const handleRegister = async () => {
-    if (!firstName || !lastName || !email || !phoneNumber) {
+    // Asegurarse de que el número telefónico tenga el prefijo +521
+    let formattedPhoneNumber = phoneNumber;
+    if (!formattedPhoneNumber.startsWith('+521')) {
+      formattedPhoneNumber = '+521' + formattedPhoneNumber;
+    }
+
+    if (!firstName || !lastName || !email || !formattedPhoneNumber) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
@@ -23,8 +29,8 @@ const RegisterPage = ({ navigation }) => {
       return;
     }
 
-    if (phoneNumber.length < 10) {
-      Alert.alert("Error", "El número telefónico debe tener al menos 10 dígitos.");
+    if (formattedPhoneNumber.length < 13) {
+      Alert.alert("Error", "El número telefónico debe tener al menos 13 dígitos.");
       return;
     }
 
@@ -33,7 +39,7 @@ const RegisterPage = ({ navigation }) => {
       firstName,
       lastName,
       email,
-      phone: phoneNumber,
+      phone: formattedPhoneNumber,
     };
 
     try {
@@ -53,12 +59,12 @@ const RegisterPage = ({ navigation }) => {
         Alert.alert("Éxito", "Registro completado correctamente.");
         console.log("Respuesta del servidor:", responseData);
 
-        // Guardar el correo electrónico en AsyncStorage después de la respuesta exitosa
+        // Guardar el id en AsyncStorage después de la respuesta exitosa
         try {
-          await AsyncStorage.setItem('userEmail', email); // Guardamos el correo en el almacenamiento local
-          console.log("Correo electrónico guardado en AsyncStorage: ", email); // Muestra el correo guardado
+          await AsyncStorage.setItem('contactId', responseData.id); // Guardamos el id en el almacenamiento local
+          console.log("ID guardado en AsyncStorage: ", responseData.id); // Muestra el id guardado
         } catch (error) {
-          console.error("Error al guardar el correo en AsyncStorage:", error);
+          console.error("Error al guardar el id en AsyncStorage:", error);
         }
 
         // Navegar a otra pantalla si es necesario
@@ -92,7 +98,7 @@ const RegisterPage = ({ navigation }) => {
         <View style={[styles.inputContainer, focusedField === 'firstName' && styles.inputContainerFocused]}>
           <Ionicons name="person-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Nombre" 
+            placeholder="Nombres" 
             style={styles.input} 
             onChangeText={setFirstName}
             value={firstName}
@@ -105,7 +111,7 @@ const RegisterPage = ({ navigation }) => {
         <View style={[styles.inputContainer, focusedField === 'lastName' && styles.inputContainerFocused]}>
           <Ionicons name="person-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Apellido" 
+            placeholder="Apellidos" 
             style={styles.input} 
             onChangeText={setLastName}
             value={lastName}
@@ -147,7 +153,7 @@ const RegisterPage = ({ navigation }) => {
         </TouchableOpacity>
 
         <Text style={styles.linkText}>
-          ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianRegisterPage')}>Registrate aquí</Text>
+          ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianRegister')}>Registrate aquí</Text>
         </Text>
       </ScrollView>
     </View>
@@ -233,7 +239,6 @@ const styles = StyleSheet.create({
   },
   link: {
     color: '#0078FF',
-    fontWeight: 'bold',
   },
 });
 

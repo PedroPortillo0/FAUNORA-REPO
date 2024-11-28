@@ -1,33 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ImageAtom from '../../components/atoms/ImageAtom';
 import * as LocalAuthentication from 'expo-local-authentication';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginPage = ({ navigation }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
-  const [hasLoggedInBefore, setHasLoggedInBefore] = useState(false);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await AsyncStorage.getItem('hasLoggedIn');
-      setHasLoggedInBefore(loggedIn === 'true');
-    };
-    checkLoginStatus();
-  }, []);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  // Función para hacer la petición POST al backend
   const handleLogin = async () => {
-    await AsyncStorage.setItem('hasLoggedIn', 'true');
-    setHasLoggedInBefore(true);
-    navigation.navigate('HomePage'); // Navegar a la página de inicio
+    navigation.navigate('HomePage');
+    const url = 'https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/login'; // Sustituye con la URL real de tu API
+
+    const payload = {
+      identifier: email, // Correo electrónico
+      password: password, // Contraseña
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Almacenar el token o cualquier información importante si es necesario
+        alert('Inicio de sesión exitoso');
+        navigation.navigate('HomePage'); // Navegar a la página de inicio
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Error en el inicio de sesión. Verifica tus credenciales.');
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      alert('Error al conectar con el servidor. Inténtalo de nuevo más tarde.');
+    }
   };
 
   const handleBiometricAuth = async () => {
@@ -76,6 +95,8 @@ const LoginPage = ({ navigation }) => {
               placeholder="Correo electrónico" 
               style={styles.input} 
               keyboardType="email-address"
+              onChangeText={setEmail}
+              value={email}
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
             />
@@ -106,12 +127,10 @@ const LoginPage = ({ navigation }) => {
             <Text style={styles.loginButtonText}>Iniciar sesión</Text>
           </TouchableOpacity>
 
-          {hasLoggedInBefore && (
-            <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricAuth}>
-              <Ionicons name="finger-print-outline" size={24} color="#00B4A7" />
-              <Text style={styles.biometricButtonText}>Iniciar sesión con huella dactilar</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricAuth}>
+            <Ionicons name="finger-print-outline" size={24} color="#00B4A7" />
+            <Text style={styles.biometricButtonText}>Iniciar sesión con huella dactilar</Text>
+          </TouchableOpacity>
 
           <Text style={styles.linkText}>
             ¿Eres veterinario? <Text style={styles.link} onPress={() => navigation.navigate('VeterinarianLogin')}>Inicia sesión aquí</Text>

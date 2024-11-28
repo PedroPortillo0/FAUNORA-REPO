@@ -2,65 +2,87 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ImageAtom from '../../components/atoms/ImageAtom';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ContactPage = ({ navigation }) => {
-  const [contactId, setContactId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [focusedField, setFocusedField] = useState(null);
 
   useEffect(() => {
-    const fetchContactId = async () => {
+    const fetchUserId = async () => {
       try {
-        const storedEmail = await AsyncStorage.getItem('userEmail');
-        if (storedEmail) {
-          const response = await fetch('https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/contacts');
-          const data = await response.json();
-          const contact = data.find(contact => contact.email === storedEmail);
-          if (contact) {
-            setContactId(contact.id);
-            setUsername(contact.email);
-          }
+        const storedId = await AsyncStorage.getItem('contactId');
+        if (storedId) {
+          setUserId(storedId);
         }
       } catch (error) {
-        console.error('Error al obtener el id de contacto:', error);
+        console.error('Error al obtener el ID del usuario del almacenamiento local:', error);
       }
     };
-    fetchContactId();
+    fetchUserId();
   }, []);
 
-  const handlePasswordChange = async () => {
-    if (!password || !confirmPassword) {
-      Alert.alert("Error", "Ambos campos de contraseña son obligatorios.");
+  const handleRegister = async () => {
+    if (!username || !password || !confirmPassword) {
+      Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
-
+  
     if (password !== confirmPassword) {
       Alert.alert("Error", "Las contraseñas no coinciden.");
       return;
     }
-
+  
     try {
-      const response = await fetch(`https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/contacts/${contactId}/password`, {
-        method: 'PUT',
+      const contactId = await AsyncStorage.getItem('contactId');
+      console.log('ID inicial (contactId):', contactId);
+  
+      const requestBody = {
+        contactId: contactId,
+        username,
+        password,
+      };
+  
+      console.log('Datos que se enviarán en el POST:', requestBody);
+  
+      const response = await fetch('https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/register', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify(requestBody),
       });
-
+  
       if (response.ok) {
-        Alert.alert("Éxito", "Contraseña actualizada correctamente.");
+        const responseData = await response.json();
+        console.log('Respuesta del servidor:', responseData);
+  
+        // Guardar el nuevo ID en AsyncStorage
+        try {
+          await AsyncStorage.setItem('userId', responseData.user.id); // Nota el cambio aquí
+          console.log("ID guardado en AsyncStorage:", responseData.user.id);
+          setUserId(responseData.user.id); // Actualiza el estado para reflejar el nuevo ID en la interfaz
+        } catch (error) {
+          console.error("Error al guardar el ID en AsyncStorage:", error);
+        }
+  
+        Alert.alert("Éxito", "Usuario registrado correctamente.");
+        navigation.navigate("Landing");
       } else {
-        Alert.alert("Error", "Ocurrió un error al actualizar la contraseña.");
+        const errorData = await response.json();
+        console.error('Error en el POST:', errorData);
+        Alert.alert("Error", "No se pudo completar el registro.");
       }
     } catch (error) {
-      console.error('Error al actualizar la contraseña:', error);
-      Alert.alert("Error", "No se pudo actualizar la contraseña. Inténtalo más tarde.");
+      console.error('Error al realizar el POST:', error);
+      Alert.alert("Error", "Ocurrió un problema al intentar registrarse.");
     }
   };
+  
+  
 
   return (
     <View style={styles.container}>
@@ -73,25 +95,25 @@ const ContactPage = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.loginContainer}>
-        <Text style={styles.title}>Actualizar Contraseña</Text>
-        <Text style={styles.subtitle}>Actualiza tu contraseña de manera segura.</Text>
+        <Text style={styles.title}>Registro de Usuario</Text>
+        <Text style={styles.subtitle}>Completa los campos para registrar un nuevo usuario.</Text>
 
-        {/* Campo de Usuario */}
         <View style={[styles.inputContainer, focusedField === 'username' && styles.inputContainerFocused]}>
           <Ionicons name="person-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Usuario" 
+            placeholder="Nombre de usuario" 
             style={styles.input} 
             value={username}
-            editable={false} // El usuario no puede editar el nombre
+            onChangeText={setUsername}
+            onFocus={() => setFocusedField('username')}
+            onBlur={() => setFocusedField(null)}
           />
         </View>
 
-        {/* Campo de Contraseña */}
         <View style={[styles.inputContainer, focusedField === 'password' && styles.inputContainerFocused]}>
           <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Nueva Contraseña" 
+            placeholder="Contraseña" 
             style={styles.input} 
             secureTextEntry
             onChangeText={setPassword}
@@ -101,7 +123,6 @@ const ContactPage = ({ navigation }) => {
           />
         </View>
 
-        {/* Confirmar Contraseña */}
         <View style={[styles.inputContainer, focusedField === 'confirmPassword' && styles.inputContainerFocused]}>
           <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
           <TextInput 
@@ -115,8 +136,8 @@ const ContactPage = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handlePasswordChange}>
-          <Text style={styles.loginButtonText}>Actualizar Contraseña</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+          <Text style={styles.loginButtonText}>Registrar Usuario</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -191,6 +212,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  userIdText: {
+    fontSize: 16,
+    color: '#00B4A7',
+    marginTop: 20,
+  }
 });
 
 export default ContactPage;

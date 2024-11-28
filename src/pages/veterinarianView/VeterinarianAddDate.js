@@ -33,6 +33,13 @@ const VeterinarianAddDate = ({ navigation }) => {
     setSelectedDate(currentDate.toISOString().split('T')[0]); // Formatear a 'YYYY-MM-DD'
   };
 
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const markedDates = appointments.reduce((acc, appointment) => {
     acc[appointment.date] = {
       marked: true,
@@ -126,7 +133,7 @@ const VeterinarianAddDate = ({ navigation }) => {
             style={styles.input}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={styles.inputText}>{chosenDate.toLocaleDateString()}</Text>
+            <Text style={styles.inputText}>{formatDate(chosenDate)}</Text> {/* Formato de fecha aquí */}
           </TouchableOpacity>
 
           {showDatePicker && (
@@ -256,8 +263,9 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   buttonText: {
-    color: 'white',
     fontSize: 18,
+    color: "#FFF",
+    fontWeight: "bold",
   },
 });
 
