@@ -1,13 +1,34 @@
-import React, { useState } from 'react'; // Importa useState
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react'; // Importa useState y useEffect
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import { FontAwesome } from 'react-native-vector-icons';
 import WaveSvg from '../../../assets/WaveSvg'; // Importa el componente SVG
 import Navbar from '../../components/organisms/Navbar'; // Importa el componente Navbar
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
 
 const UserProfile = ({ navigation }) => {
-    // Estado booleano para determinar si el usuario tiene la corona
+    const [userData, setUserData] = useState(null);
     const [isPremium, setIsPremium] = useState(true); // Puedes cambiarlo a false para probar
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const storedData = await AsyncStorage.getItem('userData');
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                setUserData(parsedData); // Almacena los datos en el estado
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    if (!userData) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text>Cargando...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -22,26 +43,27 @@ const UserProfile = ({ navigation }) => {
 
                 {/* Imagen de usuario */}
                 <Image
-                    source={{ uri: 'https://i.imgur.com/4YB4hW3.png' }} // Sustituye con tu imagen
+                    source={require('../../../assets/PerfilImg.jpg')}
                     style={styles.profileImage}
                 />
 
                 {/* Información del usuario */}
                 <View style={styles.infoContainer}>
                     <View style={styles.userNameContainer}>
-                        <Text style={styles.userName}>Juan Pérez Cruz</Text>
-                        {/* Mostrar la corona solo si isPremium es true */}
+                        <Text style={styles.userName}>
+                            {userData.contact.firstName} {userData.contact.lastName}
+                        </Text>
                         {isPremium && 
                             <MaterialCommunityIcons 
                                 name="crown" 
                                 size={16} 
                                 color="#FFC107" 
-                                style={styles.crownIcon} // Añadir estilo para separar la corona
+                                style={styles.crownIcon}
                             />
                         }
                     </View>
                     <Text style={styles.subtitle}>Actualmente cuenta con 2 mascotas</Text>
-                    <Text style={styles.userId}>Identificador: 127520763</Text>
+                    <Text style={styles.userId}>Identificador: {userData.id}</Text>
 
                     {/* Información de contacto */}
                     <View style={styles.contactContainer}>
@@ -49,13 +71,13 @@ const UserProfile = ({ navigation }) => {
                             <View style={styles.iconCircle}>
                                 <FontAwesome name="phone" size={24} color="#31B3A9" />
                             </View>
-                            <Text style={styles.contactText}>961 456 7890</Text>
+                            <Text style={styles.contactText}>{userData.contact.phone.replace('+521', '')}</Text>
                         </View>
                         <View style={styles.contactItem}>
                             <View style={styles.iconCircle}>
                                 <FontAwesome name="envelope" size={24} color="#DC4638" />
                             </View>
-                            <Text style={styles.contactText}>JuanPc@gmail.com</Text>
+                            <Text style={styles.contactText}>{userData.contact.email}</Text>
                         </View>
                     </View>
                 </View>
@@ -65,6 +87,15 @@ const UserProfile = ({ navigation }) => {
                     <TouchableOpacity style={styles.premiumButton}>
                         <Text style={styles.premiumText}>Volverse premium</Text>
                     </TouchableOpacity>
+
+                    {/* Botón de Aviso de Privacidad */}
+                    <TouchableOpacity 
+                        style={styles.privacyButton} 
+                        onPress={() => Linking.openURL('https://drive.google.com/file/d/1GBj2ukhJPv-O-_oTy67TNLagi01WI0Gk/view?usp=sharing')}
+                    >
+                        <Text style={styles.privacyText}>Aviso de privacidad</Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity style={styles.logoutButton}>
                         <Text style={styles.logoutText}>Cerrar sesión</Text>
                     </TouchableOpacity>
@@ -87,39 +118,37 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: 'center',
         width: '100%',
-        paddingBottom: 100, // Espacio adicional para el contenido
+        paddingBottom: 100,
     },
     headerBackground: {
         width: '100%',
-        height: 200, // Altura más grande
-        backgroundColor: '#E0F7FA', // Mismo color que el wave
+        height: 200,
+        backgroundColor: '#E0F7FA',
         position: 'absolute',
         top: 0,
     },
     waveContainer: {
         width: '100%',
         position: 'absolute',
-        top: 200, // Ajusta esta posición según sea necesario
+        top: 200,
         transform: [{ rotate: '180deg' }],
         marginTop: -10,
     },
     profileImage: {
-        width: 150, // Tamaño más grande
+        width: 150,
         height: 150,
-        borderRadius: 75,
+        borderRadius: 100,
         marginTop: 50,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
     },
     infoContainer: {
         width: '90%',
-        alignItems: 'flex-start', // Alinea el texto a la izquierda
+        alignItems: 'flex-start',
         marginTop: 70,
     },
     userNameContainer: {
-        flexDirection: 'row', // Asegura que el texto y la corona estén en fila
-        alignItems: 'center', // Centra verticalmente el texto y la corona
-        marginBottom: 10, // Un pequeño margen abajo para separar el nombre de la siguiente línea
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
     },
     userName: {
         fontSize: 20,
@@ -127,7 +156,7 @@ const styles = StyleSheet.create({
         color: '#212121',
     },
     crownIcon: {
-        marginLeft: 5, // Espacio pequeño a la izquierda de la corona
+        marginLeft: 5,
     },
     subtitle: {
         fontSize: 14,
@@ -149,35 +178,39 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     iconCircle: {
-        width: 40,  // Asegura que el círculo tenga el mismo tamaño para ambos íconos
+        width: 40,
         height: 40,
-        borderRadius: 20,  // Hace que el círculo sea perfectamente redondo
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#E1E1E1',
-        marginRight: 10,  // Espacio entre el icono y el texto
+        marginRight: 10,
     },
     contactText: {
         fontSize: 16,
         color: '#212121',
-    },
-    iconBackground: {
-        backgroundColor: '#E1E1E1',
-        padding: 8,
-        borderRadius: 50, // Haciendo el fondo circular
     },
     premiumButton: {
         backgroundColor: '#00B4A7',
         paddingVertical: 12,
         paddingHorizontal: 60,
         borderRadius: 30,
-        marginVertical: 10,
         width: '100%',
         justifyContent: 'center', 
         alignItems: 'center',
-        marginBottom: 20, // Espacio al fondo
+        marginBottom: 20,
     },
-    premiumText: {
+    privacyButton: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 12,
+        paddingHorizontal: 60,
+        borderRadius: 30,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    privacyText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
@@ -197,10 +230,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonsContainer: {
-        width: '90%', // Asegura que los botones estén dentro de los límites del contenido
-        marginBottom: 100, // Espacio al fondo
-        justifyContent: 'flex-end', // Alinea los botones hacia abajo
+        width: '90%',
+        marginBottom: 100,
+        justifyContent: 'flex-end',
     },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 });
 
 export default UserProfile;

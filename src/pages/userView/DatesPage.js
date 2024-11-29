@@ -66,22 +66,27 @@ const MyCalendarScreen = ({navigation}) => {
       </View>
 
       <ScrollView style={styles.appointmentList}>
-        {getAppointmentsForDate(selectedDate).map((appointment, index) => (
-          <View key={index} style={styles.petCard}>
-            <Image
-              source={{ uri: 'https://placekitten.com/200/200' }}  // Aquí puedes poner la imagen del animal
-              style={styles.petImage}
-            />
-            <View style={styles.appointmentDetails}>
-              <Text style={styles.petName}>{appointment.petName}</Text>
-              <Text style={styles.appointmentReason}>{appointment.reason}</Text>
-              <Text style={styles.appointmentTime}>{appointment.time}</Text>
+        {getAppointmentsForDate(selectedDate).length === 0 ? (
+          <Text style={styles.noAppointmentsText}>No hay ninguna cita agendada para esta fecha.</Text>
+        ) : (
+          getAppointmentsForDate(selectedDate).map((appointment, index) => (
+            <View key={index} style={styles.petCard}>
+              <Image
+                source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPUPPObe8bkov6CluwLDx5FNgla0wkgvJxAgPhrGxg_ZcXu36M1nBLZDnHfRyltQNjZVw4VROMhokT0D4mTrQ57g' }} // Aquí puedes poner la imagen del animal
+                style={styles.petImage}
+              />
+              <View style={styles.appointmentDetails}>
+                <Text style={styles.petName}>{appointment.petName}</Text>
+                <Text style={styles.appointmentReason}>{appointment.reason}</Text>
+                <Text style={styles.appointmentTime}>{appointment.time}</Text>
+              </View>
+              {/* Cuadrito de color para identificar la mascota */}
+              <View style={[styles.colorBox, { backgroundColor: appointment.color }]} />
             </View>
-            {/* Cuadrito de color para identificar la mascota */}
-            <View style={[styles.colorBox, { backgroundColor: appointment.color }]} />
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
+
       <Navbar navigation={navigation} />
     </View>
   );
@@ -161,6 +166,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginLeft: 10,
   },
+  noAppointmentsText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#555',
+    marginVertical: 20,
+    fontStyle: 'italic',
+  },
+  
 });
 
 export default MyCalendarScreen;

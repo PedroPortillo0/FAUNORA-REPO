@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from '../../components/atoms/Icon';
 import PetCard from '../../components/molecules/PetCard';
 import Navbar from '../../components/organisms/Navbar';
 
 const HomePageMain = ({ navigation }) => {
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [pets, setPets] = useState([]);
+    const [filteredPets, setFilteredPets] = useState([]);
+    const [userId, setUserId] = useState(null);
 
-    const pets = [
-        {
-            id: '1',
-            name: 'Max',
-            breed: 'Chihuahua',
-            weight: 2.5,
-            age: 5,
-            gender: 'male',
-            imageUri: require('../../../assets/Max.png'),
-        },
-        {
-            id: '2',
-            name: 'Rocky',
-            breed: 'Beagle',
-            weight: 3.0,
-            age: 7,
-            gender: 'male',
-            imageUri: require('../../../assets/Rocky.png'),
-        },
-        {
-            id: '3',
-            name: 'Mia',
-            breed: 'Siamés',
-            weight: 3.0,
-            age: 7,
-            gender: 'female',
-            imageUri: require('../../../assets/Mia.png'),
-        },
-    ];
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const storedUserId = await AsyncStorage.getItem('userId');
+                console.log('userId del AsyncStorage:', storedUserId);
+                setUserId(storedUserId);
+
+                const response = await fetch('https://3bl9j75s-3003.usw3.devtunnels.ms/api/v3/pets/');
+                const data = await response.json();
+
+                // Filtrar mascotas por userId
+                const userPets = data.filter(pet => pet.user_id === storedUserId);
+                console.log('Mascotas del usuario filtradas:', userPets); 
+                setPets(userPets);
+
+                // Guardar datos filtrados en el local storage
+                await AsyncStorage.setItem('userPets', JSON.stringify(userPets));
+            } catch (error) {
+                console.error('Error fetching pets:', error);
+                Alert.alert('Error', 'No se pudo cargar la información de las mascotas.');
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -59,7 +59,7 @@ const HomePageMain = ({ navigation }) => {
                             <Text style={styles.menuText}>Gatos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.menuItem}>
-                            <Text style={styles.menuText}>Pajaros</Text>
+                            <Text style={styles.menuText}>Pájaros</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.menuItem}>
                             <Text style={styles.menuText}>Peces</Text>
@@ -79,9 +79,9 @@ const HomePageMain = ({ navigation }) => {
                             name={pet.name}
                             breed={pet.breed}
                             weight={pet.weight}
-                            age={pet.age}
+                            age={pet.birth_date}
                             gender={pet.gender}
-                            imageUri={pet.imageUri}
+                            imageUri={{ uri: pet.image_url }}
                             targetScreen="PetDetails"
                         />
                     ))}
@@ -96,6 +96,7 @@ const HomePageMain = ({ navigation }) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

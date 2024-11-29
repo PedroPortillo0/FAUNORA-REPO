@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import { Ionicons } from '@expo/vector-icons';
 import ImageAtom from '../../components/atoms/ImageAtom';
 import * as LocalAuthentication from 'expo-local-authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage
 
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -17,7 +18,6 @@ const LoginPage = ({ navigation }) => {
 
   // Función para hacer la petición POST al backend
   const handleLogin = async () => {
-    navigation.navigate('HomePage');
     const url = 'https://3bl9j75s-3001.usw3.devtunnels.ms/api/v1/users/login'; // Sustituye con la URL real de tu API
 
     const payload = {
@@ -36,8 +36,12 @@ const LoginPage = ({ navigation }) => {
 
       if (response.ok) {
         const data = await response.json();
-        // Almacenar el token o cualquier información importante si es necesario
         alert('Inicio de sesión exitoso');
+
+        // Guardar los datos de respuesta en AsyncStorage
+        await AsyncStorage.setItem('userData', JSON.stringify(data));
+        console.log('Datos de usuario guardados en AsyncStorage:', data);
+
         navigation.navigate('HomePage'); // Navegar a la página de inicio
       } else {
         const error = await response.json();

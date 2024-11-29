@@ -1,67 +1,54 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ImageAtom from '../../components/atoms/ImageAtom';
+import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
-import ImageAtom from '../../components/atoms/ImageAtom';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VeterinarianRegisterPage = ({ navigation }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
-  const [combinedUbication, setCombinedUbication] = useState('');
 
-  const handleRegister = async () => {
-    
-    let formattedPhoneNumber = phoneNumber;
-    if (!formattedPhoneNumber.startsWith('+521')) {
-      formattedPhoneNumber = '+521' + formattedPhoneNumber;
-    }
-    if (!email || !firstName || !lastName || !formattedPhoneNumber || !address) {
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+  };
+
+  const handleRegister = () => {
+    if (!email || !username || !password || !confirmPassword || !latitude || !longitude || !imageUri) {
       Alert.alert("Error", "Todos los campos son obligatorios.");
       return;
     }
+    Alert.alert("Éxito", "Te has registrado correctamente.");
+  };
 
-    // Objeto con los datos del veterinario
-    const vetData = {
-      firstName,
-      lastName,
-      email,
-      phone: formattedPhoneNumber,
-      ubication: combinedUbication, // Direccion
-    };
-
-    console.log('Datos del veterinario:',vetData);
-
-    try {
-      const response = await fetch('https://3bl9j75s-3004.usw3.devtunnels.ms/api/v3/Contact/veterinario/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vetData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Si la respuesta es exitosa, guardamos el id en el local storage
-        await AsyncStorage.setItem('veterinarianId', data.id.toString());
-        console.log('ID del veterinario guardado en AsyncStorage:', data.id); // Imprimir veterinarianId en consola
-        Alert.alert("Éxito", "Te has registrado correctamente.");
-        navigation.goBack(); // Regresar a la página anterior
-      } else {
-        Alert.alert("Error", "Hubo un problema al registrar el veterinario.");
-      }
-    } catch (error) {
-      Alert.alert("Error", "Hubo un error al realizar el registro. Intenta nuevamente.");
-      console.error(error);
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Error", "Permisos de galería denegados.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
     }
   };
 
@@ -88,19 +75,11 @@ const VeterinarianRegisterPage = ({ navigation }) => {
     setMapVisible(true);
   };
 
-
   const handleMapPress = (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
-    console.log(`Latitud seleccionada: ${latitude}`);
-    console.log(`Longitud seleccionada: ${longitude}`);
     setLatitude(latitude);
     setLongitude(longitude);
-  
-    const locationString = `${latitude}, ${longitude}`;
-    setCombinedUbication(locationString); // Actualiza el estado global
-    setAddress(locationString);
-    console.log("Ubicación seleccionada:", locationString);
-  
+
     Location.reverseGeocodeAsync({ latitude, longitude })
       .then((reverseGeocode) => {
         if (reverseGeocode.length > 0) {
@@ -109,10 +88,9 @@ const VeterinarianRegisterPage = ({ navigation }) => {
         }
       })
       .catch(() => Alert.alert("Error", "No se pudo obtener la dirección"));
-  
+
     setMapVisible(false);
   };
-  
 
   return (
     <View style={styles.container}>
@@ -129,26 +107,6 @@ const VeterinarianRegisterPage = ({ navigation }) => {
         <Text style={styles.subtitle}>Únete a nuestra comunidad y mejora el cuidado de tus pacientes.</Text>
 
         <View style={styles.inputContainer}>
-          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Nombres" 
-            style={styles.input} 
-            onChangeText={setFirstName}
-            value={firstName}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
-          <TextInput 
-            placeholder="Apellidos" 
-            style={styles.input} 
-            onChangeText={setLastName}
-            value={lastName}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
           <Ionicons name="mail-outline" size={20} color="#A0A0A0" />
           <TextInput 
             placeholder="Correo electrónico" 
@@ -160,14 +118,49 @@ const VeterinarianRegisterPage = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Ionicons name="call-outline" size={20} color="#A0A0A0" />
+          <Ionicons name="person-outline" size={20} color="#A0A0A0" />
           <TextInput 
-            placeholder="Teléfono" 
+            placeholder="Nombre de usuario" 
             style={styles.input} 
-            keyboardType="phone-pad"
-            onChangeText={setPhoneNumber}
-            value={phoneNumber}
+            onChangeText={setUsername}
+            value={username}
           />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
+          <TextInput 
+            placeholder="Contraseña" 
+            style={styles.input} 
+            secureTextEntry={!isPasswordVisible}
+            onChangeText={setPassword}
+            value={password}
+          />
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+            <Ionicons 
+              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+              size={20} 
+              color="#A0A0A0" 
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" />
+          <TextInput 
+            placeholder="Confirmar contraseña" 
+            style={styles.input} 
+            secureTextEntry={!isConfirmPasswordVisible}
+            onChangeText={setConfirmPassword}
+            value={confirmPassword}
+          />
+          <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
+            <Ionicons 
+              name={isConfirmPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+              size={20} 
+              color="#A0A0A0" 
+            />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.locationButton} onPress={openMap}>
@@ -177,6 +170,14 @@ const VeterinarianRegisterPage = ({ navigation }) => {
         {address ? (
           <Text style={styles.coordinates}>Dirección: {address}</Text>
         ) : null}
+
+        <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+          <Ionicons name="image-outline" size={20} color="#A0A0A0" />
+          <Text style={styles.imagePickerText}>Seleccionar imagen</Text>
+        </TouchableOpacity>
+        {imageUri && (
+          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+        )}
 
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
           <Text style={styles.loginButtonText}>Registrar</Text>
@@ -327,4 +328,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VeterinarianRegisterPage;
+export default VeterinarianContactPage;

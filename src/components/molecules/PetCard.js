@@ -6,6 +6,8 @@ import Icon from '../atoms/Icon';
 import ImageAtom from '../atoms/ImageAtom';
 
 const PetCard = ({ navigation, id, name, breed, weight, age, gender, imageUri, targetScreen }) => {
+    console.log(imageUri);
+    console.log(name);
     const [isModalVisible, setModalVisible] = useState(false);
 
     const toggleModal = () => {
@@ -16,12 +18,9 @@ const PetCard = ({ navigation, id, name, breed, weight, age, gender, imageUri, t
         navigation.navigate(targetScreen, { id, name, breed, weight, age, gender, imageUri });
     };
 
-    // Verifica si imageUri es un objeto (para imágenes locales) o una URL de red.
-    const imageSource = typeof imageUri === 'number' ? imageUri : { uri: imageUri };
-
     return (
         <TouchableOpacity onPress={handlePress} style={styles.card}>
-            <ImageAtom source={imageSource} style={styles.image} />
+            <ImageAtom source={{ uri: imageUri.uri }} style={styles.image} />
             <View style={styles.infoContainer}>
                 <TitleAtom content={name} style={styles.name} />
                 <TextLabel style={styles.breed}>{breed}</TextLabel>
@@ -29,7 +28,7 @@ const PetCard = ({ navigation, id, name, breed, weight, age, gender, imageUri, t
                 <TextLabel style={styles.details}>{age} años</TextLabel>
             </View>
             <View style={styles.iconContainer}>
-                <Icon name={gender === 'male' ? 'male' : 'female'} size={20} color="#555" />
+                <Icon name={gender === 'Macho' ? 'male' : 'female'} size={20} color="#555" />
                 <TouchableOpacity onPress={toggleModal} style={styles.moreButton}>
                     <Icon name="ellipsis-vertical" size={20} color="#A0A0A0" />
                 </TouchableOpacity>
@@ -79,10 +78,10 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
-        borderTopLeftRadius: 50,  // Esquina superior izquierda
-        borderTopRightRadius: 10, // Esquina superior derecha
-        borderBottomLeftRadius: 50, // Esquina inferior izquierda
-        borderBottomRightRadius: 45, // Esquina inferior derecha
+        borderTopLeftRadius: 50, 
+        borderTopRightRadius: 10,
+        borderBottomLeftRadius: 50,
+        borderBottomRightRadius: 45,
         marginRight: 15,
     },
     infoContainer: {

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image 
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import NavbarVeterinarian from '../../components/organisms/NavbarVeterinarian';
+import Icon from 'react-native-vector-icons/Ionicons'; // Importa el ícono
 
 const VeterinarianHomePage = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -44,10 +45,13 @@ const VeterinarianHomePage = ({ navigation }) => {
             />
             <View style={styles.header}>
                 <Text style={styles.welcomeText}>Bienvenido</Text>
-                <TextInput 
-                    style={styles.searchBar}
-                    placeholder="Busca el nombre de tu mascota"
-                />
+                <View style={styles.searchContainer}>
+                    <Icon name="search" size={20} color="#A0A0A0" style={styles.searchIcon} />
+                    <TextInput 
+                        style={styles.searchBar}
+                        placeholder="Buscar por el nombre del dueño"
+                    />
+                </View>
             </View>
 
             <View style={styles.table}>
@@ -121,14 +125,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         alignSelf: 'flex-end',
     },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F0F0F0',
+        borderRadius: 25,
+        paddingHorizontal: 10,
+        marginBottom: 20,
+    },
     searchBar: {
-        width: '90%',
-        alignSelf: 'center',
+        flex: 1,
         backgroundColor: '#F0F0F0',
         padding: 10,
         borderRadius: 25,
-        marginBottom: 20,
-        paddingLeft: 20,
+        paddingLeft: 10,
+    },
+    searchIcon: {
+        marginRight: 10,
     },
     table: {
         marginHorizontal: 20,
@@ -139,6 +152,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 10,
         backgroundColor: '#00B4A7',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10, 
     },
     columnHeaderR: {
         fontSize: 16,

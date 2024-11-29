@@ -10,6 +10,11 @@ const ContactPage = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [focusedField, setFocusedField] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -95,8 +100,8 @@ const ContactPage = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.loginContainer}>
-        <Text style={styles.title}>Registro de Usuario</Text>
-        <Text style={styles.subtitle}>Completa los campos para registrar un nuevo usuario.</Text>
+        <Text style={styles.title}>Validación de cuenta</Text>
+        <Text style={styles.subtitle}>Completa los campos para validar tu cuenta.</Text>
 
         <View style={[styles.inputContainer, focusedField === 'username' && styles.inputContainerFocused]}>
           <Ionicons name="person-outline" size={20} color="#A0A0A0" />
@@ -115,12 +120,19 @@ const ContactPage = ({ navigation }) => {
           <TextInput 
             placeholder="Contraseña" 
             style={styles.input} 
-            secureTextEntry
+            secureTextEntry={!isPasswordVisible}
             onChangeText={setPassword}
             value={password}
             onFocus={() => setFocusedField('password')}
             onBlur={() => setFocusedField(null)}
           />
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+            <Ionicons 
+              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+              size={20} 
+              color="#A0A0A0" 
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={[styles.inputContainer, focusedField === 'confirmPassword' && styles.inputContainerFocused]}>
@@ -128,12 +140,19 @@ const ContactPage = ({ navigation }) => {
           <TextInput 
             placeholder="Confirmar Contraseña" 
             style={styles.input} 
-            secureTextEntry
+            secureTextEntry={!isPasswordVisible}
             onChangeText={setConfirmPassword}
             value={confirmPassword}
             onFocus={() => setFocusedField('confirmPassword')}
             onBlur={() => setFocusedField(null)}
           />
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+            <Ionicons 
+              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+              size={20} 
+              color="#A0A0A0" 
+            />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
